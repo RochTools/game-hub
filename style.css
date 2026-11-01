@@ -1,0 +1,141 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #ffffff;
+  color: #14141f;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+#home {
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 28px);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 22px;
+  letter-spacing: .3px;
+  color: #14141f;
+}
+
+/* ایک لائن میں دو کارڈ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* سفید کارڈ، ہلکا بارڈر اور شیڈو سے اوپر اٹھا ہوا */
+.tile {
+  background: #ffffff;
+  border: 1px solid #e8eaf0;
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(20, 20, 50, .06), 0 8px 20px rgba(20, 20, 50, .09);
+  color: inherit;
+  padding: 18px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font: inherit;
+  transition: transform .12s, box-shadow .12s;
+}
+.tile:active {
+  transform: translateY(1px) scale(.985);
+  box-shadow: 0 1px 2px rgba(20, 20, 50, .08), 0 3px 8px rgba(20, 20, 50, .08);
+}
+
+.icon {
+  width: 100%;
+  max-width: 112px;
+  aspect-ratio: 1;
+  border-radius: 24%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #eceef5;
+  color: #fff;
+}
+.icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.icon span { font-size: 2.6rem; font-weight: 800; }
+
+.name {
+  font-size: .95rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.25;
+  color: #1c1c2b;
+}
+
+/* ---------- Player ---------- */
+#player {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: #ffffff;
+}
+#player[hidden] { display: none; }
+
+#frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+}
+
+/* X بٹن: اسکرین کے بالکل درمیان میں */
+#closeBtn {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 0;
+  z-index: 20;
+  padding: 0;
+  border: 1px solid rgba(20, 20, 50, .12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .8);
+  box-shadow: 0 4px 14px rgba(20, 20, 50, .22);
+  opacity: .6;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform .22s cubic-bezier(.2, .9, .3, 1.2), opacity .15s, background .15s;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+/* دبانے پر بڑا ہو کر انگلی سے باہر نکل آئے تاکہ سرکل نظر آئے */
+#closeBtn.holding {
+  /* کنارے سے چپکا ہے، اس لیے بڑا ہوتے وقت تھوڑا اندر کھسکتا ہے تاکہ سرکل کٹے نہیں */
+  transform: translateX(-42px) scale(2.4);
+  opacity: 1;
+  background: #ffffff;
+}
+
+#closeBtn svg { display: block; }
+.track { fill: none; stroke: rgba(20, 20, 50, .12); stroke-width: 3; }
+.ring {
+  fill: none;
+  stroke: #ff3b5c;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset .15s ease-out, stroke-width .15s;
+}
+#closeBtn.holding .ring {
+  stroke-dashoffset: 0;
+  stroke-width: 6;
+  transition: stroke-dashoffset var(--hold, 2s) linear, stroke-width .15s;
+}
+.x { stroke: #14141f; stroke-width: 3.5; stroke-linecap: round; fill: none; }
