@@ -1,6 +1,6 @@
 // صرف لانچر کی اپنی فائلیں کیش ہوتی ہیں۔ گیمز کو یہ ہاتھ نہیں لگاتا۔
-// لانچر میں تبدیلی کریں تو نیچے والا ورژن بڑھا دیں (v1 -> v2)۔
-const CACHE = 'hub-v4';
+// پہلے نیٹ ورک سے تازہ فائل لیتا ہے (تبدیلی فوراً نظر آتی ہے)، آف لائن ہو تو کیش سے دیتا ہے۔
+const CACHE = 'hub-v5';
 const SHELL = [
   './', 'index.html', 'style.css', 'app.js',
   'games.json', 'manifest.json', 'icon-192.png', 'icon-512.png'
@@ -23,33 +23,15 @@ self.addEventListener('fetch', (e) => {
   // صرف لانچر کے اپنے راستے کی GET درخواستیں؛ باقی سب (گیمز، ان کے آئیکن) براہِ راست نیٹ ورک پر
   if (req.method !== 'GET' || !req.url.startsWith(self.registration.scope)) return;
 
-  // games.json: پہلے نیٹ ورک تاکہ نیا گیم فوراً نظر آئے، ورنہ کیش
-  if (req.url.endsWith('games.json')) {
-    e.respondWith(
-      fetch(req)
-        .then((res) => {
+  e.respondWith(
+    fetch(req, { cache: 'no-cache' })
+      .then((res) => {
+        if (res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match(req))
-    );
-    return;
-  }
-
-  // باقی: کیش سے فوراً، پیچھے سے تازہ کاری
-  e.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((hit) => {
-      const net = fetch(req)
-        .then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => hit);
-      return hit || net;
-    })
+        }
+        return res;
+      })
+      .catch(() => caches.match(req, { ignoreSearch: true }))
   );
 });
