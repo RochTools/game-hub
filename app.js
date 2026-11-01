@@ -7,11 +7,17 @@ const drawer = document.getElementById('drawer');
 const backdrop = document.getElementById('backdrop');
 const drawerClose = document.getElementById('drawerClose');
 const savedList = document.getElementById('savedList');
+const cats = document.getElementById('cats');
+const searchInput = document.getElementById('search');
+const noResults = document.getElementById('noResults');
 
 const HOLD_MS = 2000; // X کو اتنی دیر دبائے رکھنا ہے
 closeBtn.style.setProperty('--hold', HOLD_MS + 'ms'); // سرکل کی اینیمیشن بھی اتنی ہی لمبی
 
 let GAMES = [];
+const TILES = [];      // ہر گیم کا کارڈ، فلٹر کے لیے
+let activeCat = null;  // 1 / 2 / 4 یا null (سب گیمز)
+let query = '';
 
 /* ---------- آئیکن خود ڈھونڈنا (گیم کے اپنے ہوم اسکرین آئیکن) ---------- */
 function iconCache() {
@@ -106,7 +112,7 @@ function renderSaved() {
   if (!games.length) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.textContent = 'ابھی کوئی گیم محفوظ نہیں۔ کسی گیم کے نیچے دل دبائیں۔';
+    empty.textContent = 'No saved games yet. Tap the heart under a game to save it.';
     savedList.appendChild(empty);
     return;
   }
@@ -192,6 +198,7 @@ function makeTile(game) {
 
   card.append(open, heart);
   fillIcon(icon, game);
+  TILES.push({ game, card });
   return card;
 }
 
@@ -200,9 +207,47 @@ async function loadGames() {
     GAMES = await (await fetch('games.json')).json();
     GAMES.forEach((g) => grid.appendChild(makeTile(g)));
   } catch {
-    grid.textContent = 'games.json لوڈ نہیں ہوئی';
+    grid.textContent = "Couldn't load games.json";
   }
 }
+
+/* ---------- کیٹیگری اور سرچ ---------- */
+function applyFilters() {
+  const q = query.trim().toLowerCase();
+  let shown = 0;
+
+  TILES.forEach(({ game, card }) => {
+    const okCat = activeCat === null || (game.players || []).includes(activeCat);
+    const okQuery = !q || (game.title || '').toLowerCase().includes(q);
+    const show = okCat && okQuery;
+    card.hidden = !show;
+    if (show) shown++;
+  });
+
+  if (TILES.length && shown === 0) {
+    noResults.textContent = q ? 'No games found.' : 'No games in this category yet.';
+    noResults.hidden = false;
+  } else {
+    noResults.hidden = true;
+  }
+}
+
+// چپ دبائیں تو فلٹر لگے، اسی کو دوبارہ دبائیں تو ہٹ جائے
+cats.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  const n = Number(chip.dataset.players);
+  activeCat = activeCat === n ? null : n;
+  cats.querySelectorAll('.chip').forEach((c) => {
+    c.setAttribute('aria-pressed', String(Number(c.dataset.players) === activeCat));
+  });
+  applyFilters();
+});
+
+searchInput.addEventListener('input', () => {
+  query = searchInput.value;
+  applyFilters();
+});
 
 /* ---------- گیم کھولنا / بند کرنا ---------- */
 // اوپر کی اسٹیٹس بار کا رنگ: گیم میں گیم کا، ہوم پر سفید
