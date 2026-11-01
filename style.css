@@ -261,7 +261,7 @@ h1 {
   display: flex;
   flex-wrap: nowrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 .chip {
   flex: 1 1 0;
@@ -291,7 +291,7 @@ h1 {
   gap: 10px;
   height: 46px;
   padding: 0 14px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   background: #fff;
   border: 1px solid #e8eaf0;
   border-radius: 14px;
