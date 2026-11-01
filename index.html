@@ -15,10 +15,32 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header id="topbar">
+    <div class="brand">
+      <span class="logo">🎮</span>
+      <h1>Games Hub</h1>
+    </div>
+    <button id="menuBtn" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
   <main id="home">
-    <h1>Games Hub</h1>
     <div id="grid" class="grid"></div>
   </main>
+
+  <div id="backdrop"></div>
+  <aside id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Menu</h2>
+      <button id="drawerClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <section class="saved">
+      <h3>Saved Games <span class="saved-heart">❤</span></h3>
+      <div id="savedList"></div>
+    </section>
+  </aside>
 
   <section id="player" hidden>
     <iframe id="frame" title="game"
