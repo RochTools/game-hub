@@ -1,6 +1,6 @@
 // صرف لانچر کی اپنی فائلیں کیش ہوتی ہیں۔ گیمز کو یہ ہاتھ نہیں لگاتا۔
 // لانچر میں تبدیلی کریں تو نیچے والا ورژن بڑھا دیں (v1 -> v2)۔
-const CACHE = 'hub-v3';
+const CACHE = 'hub-v4';
 const SHELL = [
   './', 'index.html', 'style.css', 'app.js',
   'games.json', 'manifest.json', 'icon-192.png', 'icon-512.png'

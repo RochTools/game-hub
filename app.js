@@ -99,13 +99,21 @@ async function loadGames() {
 }
 
 /* ---------- گیم کھولنا / بند کرنا ---------- */
+// اوپر کی اسٹیٹس بار کا رنگ: گیم میں گیم کا، ہوم پر سفید
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+function setBarColor(color) {
+  if (themeMeta) themeMeta.setAttribute('content', color);
+}
+
 function openGame(game) {
+  setBarColor(game.bar || game.color || '#ffffff');
   frame.src = game.url;
   player.hidden = false;
 }
 function closeGame() {
   player.hidden = true;
   frame.src = 'about:blank';
+  setBarColor('#ffffff');
 }
 
 /* ---------- X کو 3 سیکنڈ دبا کر بند کرنا ---------- */
