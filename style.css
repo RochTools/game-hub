@@ -8,19 +8,60 @@ html, body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-#home {
-  min-height: 100dvh;
-  padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 28px);
-  max-width: 640px;
-  margin: 0 auto;
+/* ---------- ہیڈر ---------- */
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  background: rgba(255, 255, 255, .94);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #eceef3;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo { font-size: 1.6rem; line-height: 1; }
+h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: .3px;
 }
 
-h1 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0 0 22px;
-  letter-spacing: .3px;
-  color: #14141f;
+/* تین لکیروں والا مینیو بٹن */
+#menuBtn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #e8eaf0;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(20, 20, 50, .06), 0 4px 10px rgba(20, 20, 50, .08);
+  cursor: pointer;
+}
+#menuBtn span {
+  display: block;
+  width: 20px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: #14141f;
+}
+#menuBtn:active { transform: scale(.94); }
+
+/* ---------- ہوم ---------- */
+#home {
+  min-height: calc(100dvh - 70px);
+  padding: 20px 16px calc(env(safe-area-inset-bottom) + 28px);
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 /* ایک لائن میں دو کارڈ */
@@ -36,20 +77,27 @@ h1 {
   border: 1px solid #e8eaf0;
   border-radius: 22px;
   box-shadow: 0 1px 2px rgba(20, 20, 50, .06), 0 8px 20px rgba(20, 20, 50, .09);
-  color: inherit;
-  padding: 18px 12px 16px;
+  padding: 16px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.open {
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
+  color: inherit;
   font: inherit;
-  transition: transform .12s, box-shadow .12s;
+  cursor: pointer;
 }
-.tile:active {
-  transform: translateY(1px) scale(.985);
-  box-shadow: 0 1px 2px rgba(20, 20, 50, .08), 0 3px 8px rgba(20, 20, 50, .08);
-}
+.open:active .icon { transform: scale(.95); }
 
 .icon {
   width: 100%;
@@ -61,6 +109,7 @@ h1 {
   place-items: center;
   background: #eceef5;
   color: #fff;
+  transition: transform .12s;
 }
 .icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .icon span { font-size: 2.6rem; font-weight: 800; }
@@ -71,6 +120,137 @@ h1 {
   text-align: center;
   line-height: 1.25;
   color: #1c1c2b;
+}
+
+/* ---------- دل کا بٹن ---------- */
+.heart {
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.heart svg { width: 26px; height: 26px; display: block; }
+.heart path {
+  fill: none;
+  stroke: #b4b9c8;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: fill .15s, stroke .15s;
+}
+.heart.on path { fill: #ff3b5c; stroke: #ff3b5c; }
+.heart.pop svg { animation: pop .35s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes pop {
+  0% { transform: scale(.7); }
+  60% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- سائیڈ مینیو ---------- */
+#backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  background: rgba(10, 10, 30, .38);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+#backdrop.open { opacity: 1; pointer-events: auto; }
+
+#drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(84vw, 330px);
+  z-index: 30;
+  background: #fff;
+  box-shadow: -10px 0 30px rgba(20, 20, 50, .18);
+  padding: calc(env(safe-area-inset-top) + 16px) 16px 24px;
+  overflow-y: auto;
+  transform: translateX(105%);
+  visibility: hidden;
+  transition: transform .25s ease, visibility 0s linear .25s;
+}
+#drawer.open {
+  transform: none;
+  visibility: visible;
+  transition: transform .25s ease, visibility 0s;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.drawer-head h2 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+#drawerClose {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e8eaf0;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 1rem;
+  color: #14141f;
+  cursor: pointer;
+}
+
+.saved h3 {
+  margin: 0 0 12px;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #3b3b4f;
+}
+.saved-heart { color: #ff3b5c; }
+
+#savedList { display: flex; flex-direction: column; gap: 10px; }
+
+.saved-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #e8eaf0;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(20, 20, 50, .05), 0 4px 10px rgba(20, 20, 50, .07);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.saved-row:active { transform: scale(.985); }
+.saved-row .thumb {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 24%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #eceef5;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+.saved-row .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.saved-row .label { font-weight: 600; font-size: .95rem; }
+
+.empty {
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #7b8094;
+  padding: 14px;
+  border: 1px dashed #d9dce6;
+  border-radius: 16px;
+  text-align: center;
 }
 
 /* ---------- Player ---------- */
@@ -91,7 +271,7 @@ h1 {
   background: #ffffff;
 }
 
-/* X بٹن: اسکرین کے بالکل درمیان میں */
+/* X بٹن: دائیں کنارے پر، اوپر نیچے کے لحاظ سے درمیان میں */
 #closeBtn {
   position: absolute;
   top: 50%;
