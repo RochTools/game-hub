@@ -17,7 +17,6 @@
 <body>
   <header id="topbar">
     <div class="brand">
-      <span class="logo">🎮</span>
       <h1>Games Hub</h1>
     </div>
     <button id="menuBtn" aria-label="Menu" aria-expanded="false">
@@ -26,7 +25,22 @@
   </header>
 
   <main id="home">
+    <nav id="cats" class="cats" aria-label="Categories">
+      <button class="chip" data-players="1" aria-pressed="false">1 Player</button>
+      <button class="chip" data-players="2" aria-pressed="false">2 Player</button>
+      <button class="chip" data-players="4" aria-pressed="false">4 Player</button>
+    </nav>
+
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input id="search" type="search" placeholder="Search games" autocomplete="off">
+    </label>
+
     <div id="grid" class="grid"></div>
+    <div id="noResults" class="empty" hidden></div>
   </main>
 
   <div id="backdrop"></div>
