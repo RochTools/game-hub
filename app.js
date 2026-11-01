@@ -2,9 +2,16 @@ const grid = document.getElementById('grid');
 const player = document.getElementById('player');
 const frame = document.getElementById('frame');
 const closeBtn = document.getElementById('closeBtn');
+const menuBtn = document.getElementById('menuBtn');
+const drawer = document.getElementById('drawer');
+const backdrop = document.getElementById('backdrop');
+const drawerClose = document.getElementById('drawerClose');
+const savedList = document.getElementById('savedList');
 
 const HOLD_MS = 2000; // X کو اتنی دیر دبائے رکھنا ہے
 closeBtn.style.setProperty('--hold', HOLD_MS + 'ms'); // سرکل کی اینیمیشن بھی اتنی ہی لمبی
+
+let GAMES = [];
 
 /* ---------- آئیکن خود ڈھونڈنا (گیم کے اپنے ہوم اسکرین آئیکن) ---------- */
 function iconCache() {
@@ -59,40 +66,139 @@ async function findIcon(game) {
   }
 }
 
+// کسی بھی خانے میں آئیکن ڈالنا؛ نہ ملے تو حرف والا رنگین خانہ رہے گا
+function fillIcon(box, game) {
+  findIcon(game).then((href) => {
+    if (!href) return;
+    const img = new Image();
+    img.alt = '';
+    img.onload = () => { box.textContent = ''; box.appendChild(img); };
+    img.src = href;
+  });
+}
+function letterOf(game) {
+  return (game.title || '?').trim().charAt(0).toUpperCase();
+}
+
+/* ---------- محفوظ گیمز (دل) ---------- */
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem('hubSaved') || '[]'); } catch { return []; }
+}
+function storeSaved(list) {
+  try { localStorage.setItem('hubSaved', JSON.stringify(list)); } catch {}
+}
+// محفوظ کر دے تو true، ہٹا دے تو false
+function toggleSaved(url) {
+  const list = loadSaved();
+  const i = list.indexOf(url);
+  if (i >= 0) list.splice(i, 1); else list.push(url);
+  storeSaved(list);
+  return i < 0;
+}
+
+function renderSaved() {
+  const games = loadSaved()
+    .map((u) => GAMES.find((g) => g.url === u))
+    .filter(Boolean);
+
+  savedList.textContent = '';
+
+  if (!games.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = 'ابھی کوئی گیم محفوظ نہیں۔ کسی گیم کے نیچے دل دبائیں۔';
+    savedList.appendChild(empty);
+    return;
+  }
+
+  games.forEach((g) => {
+    const row = document.createElement('button');
+    row.className = 'saved-row';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    thumb.style.background = g.color || '#2a2545';
+    thumb.textContent = letterOf(g);
+
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = g.title;
+
+    row.append(thumb, label);
+    row.addEventListener('click', () => {
+      closeDrawer();
+      openGame(g);
+    });
+    fillIcon(thumb, g);
+    savedList.appendChild(row);
+  });
+}
+
+/* ---------- مینیو (تین لکیریں) ---------- */
+function openDrawer() {
+  renderSaved();
+  drawer.classList.add('open');
+  backdrop.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  menuBtn.setAttribute('aria-expanded', 'true');
+}
+function closeDrawer() {
+  drawer.classList.remove('open');
+  backdrop.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  menuBtn.setAttribute('aria-expanded', 'false');
+}
+menuBtn.addEventListener('click', openDrawer);
+drawerClose.addEventListener('click', closeDrawer);
+backdrop.addEventListener('click', closeDrawer);
+
 /* ---------- ٹائلیں بنانا ---------- */
+const HEART_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
 function makeTile(game) {
-  const btn = document.createElement('button');
-  btn.className = 'tile';
+  const card = document.createElement('div');
+  card.className = 'tile';
+
+  const open = document.createElement('button');
+  open.className = 'open';
 
   const icon = document.createElement('div');
   icon.className = 'icon';
   icon.style.background = game.color || '#2a2545';
   const letter = document.createElement('span');
-  letter.textContent = (game.title || '?').trim().charAt(0).toUpperCase();
+  letter.textContent = letterOf(game);
   icon.appendChild(letter);
 
   const name = document.createElement('div');
   name.className = 'name';
   name.textContent = game.title;
 
-  btn.append(icon, name);
-  btn.addEventListener('click', () => openGame(game));
+  open.append(icon, name);
+  open.addEventListener('click', () => openGame(game));
 
-  findIcon(game).then((href) => {
-    if (!href) return;
-    const img = new Image();
-    img.alt = '';
-    img.onload = () => { icon.textContent = ''; icon.appendChild(img); };
-    img.src = href; // نہ کھلے تو حرف والا ٹائل ہی رہے گا
+  const heart = document.createElement('button');
+  heart.className = 'heart';
+  heart.innerHTML = HEART_SVG;
+  heart.setAttribute('aria-label', 'Save ' + game.title);
+  if (loadSaved().includes(game.url)) heart.classList.add('on');
+  heart.addEventListener('click', () => {
+    const on = toggleSaved(game.url);
+    heart.classList.toggle('on', on);
+    heart.classList.remove('pop');
+    void heart.offsetWidth; // اینیمیشن دوبارہ چلانے کے لیے
+    heart.classList.add('pop');
   });
 
-  return btn;
+  card.append(open, heart);
+  fillIcon(icon, game);
+  return card;
 }
 
 async function loadGames() {
   try {
-    const games = await (await fetch('games.json')).json();
-    games.forEach((g) => grid.appendChild(makeTile(g)));
+    GAMES = await (await fetch('games.json')).json();
+    GAMES.forEach((g) => grid.appendChild(makeTile(g)));
   } catch {
     grid.textContent = 'games.json لوڈ نہیں ہوئی';
   }
@@ -116,13 +222,13 @@ function closeGame() {
   setBarColor('#ffffff');
 }
 
-/* ---------- X کو 3 سیکنڈ دبا کر بند کرنا ---------- */
+/* ---------- X کو دبا کر بند کرنا ---------- */
 let holdTimer = null;
 
 function startHold(e) {
   e.preventDefault();
   try { closeBtn.setPointerCapture(e.pointerId); } catch {}
-  closeBtn.classList.add('holding');          // سرکل بھرنا شروع (CSS میں 3 سیکنڈ)
+  closeBtn.classList.add('holding');          // سرکل بھرنا شروع (CSS میں HOLD_MS جتنا)
   clearTimeout(holdTimer);
   holdTimer = setTimeout(() => {
     cancelHold();
