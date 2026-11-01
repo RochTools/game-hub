@@ -25,12 +25,6 @@
   </header>
 
   <main id="home">
-    <nav id="cats" class="cats" aria-label="Categories">
-      <button class="chip" data-players="1" aria-pressed="false">1 Player</button>
-      <button class="chip" data-players="2" aria-pressed="false">2 Player</button>
-      <button class="chip" data-players="4" aria-pressed="false">4 Player</button>
-    </nav>
-
     <label class="search">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="7"></circle>
@@ -38,6 +32,12 @@
       </svg>
       <input id="search" type="search" placeholder="Search games" autocomplete="off">
     </label>
+
+    <nav id="cats" class="cats" aria-label="Categories">
+      <button class="chip" data-players="1" aria-pressed="false">1 Player</button>
+      <button class="chip" data-players="2" aria-pressed="false">2 Player</button>
+      <button class="chip" data-players="4" aria-pressed="false">4 Player</button>
+    </nav>
 
     <div id="grid" class="grid"></div>
     <div id="noResults" class="empty" hidden></div>
