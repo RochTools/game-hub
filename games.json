@@ -1,18 +1,21 @@
 [
   {
-    "title": "Block Blast 3D",
+    "title": "3D Blocks",
     "url": "https://rochtools.github.io/block-blast-game/index.html",
     "color": "#0b0620",
-    "bar": "#d89b66"
+    "bar": "#d89b66",
+    "players": [1]
   },
   {
     "title": "Bubble Bounce",
     "url": "https://rochtools.github.io/bubble-bounce/",
-    "color": "#3d97ff"
+    "color": "#3d97ff",
+    "players": [1]
   },
   {
     "title": "The Mill Game",
     "url": "https://rochtools.github.io/the-mill-game/",
-    "color": "#682eea"
+    "color": "#682eea",
+    "players": [1, 2]
   }
 ]
