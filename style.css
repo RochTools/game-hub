@@ -359,11 +359,10 @@ h1 {
 /* X بٹن: دائیں کنارے پر، اوپر نیچے کے لحاظ سے درمیان میں */
 #closeBtn {
   position: absolute;
-  top: 50%;
-  right: 4px;
+  top: 0;
+  left: 0; /* اصل جگہ app.js سے لگتی ہے */
   width: 56px;
   height: 56px;
-  margin: -28px 0 0 0;
   z-index: 20;
   padding: 0;
   border: 1px solid rgba(20, 20, 50, .12);
@@ -382,9 +381,17 @@ h1 {
 /* دبانے پر بڑا ہو کر انگلی سے باہر نکل آئے تاکہ سرکل نظر آئے */
 #closeBtn.holding {
   /* کنارے سے چپکا ہے، اس لیے بڑا ہوتے وقت تھوڑا اندر کھسکتا ہے تاکہ سرکل کٹے نہیں */
-  transform: translateX(-42px) scale(2.4);
+  transform: translate(var(--sx, 0px), var(--sy, 0px)) scale(2.4);
   opacity: 1;
   background: #ffffff;
+}
+
+/* کھینچتے وقت ہلکا سا بڑا اور واضح */
+#closeBtn.dragging {
+  transform: scale(1.2);
+  opacity: 1;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(20, 20, 50, .3);
 }
 
 #closeBtn svg { display: block; }
