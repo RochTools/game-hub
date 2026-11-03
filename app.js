@@ -292,6 +292,31 @@ closeBtn.addEventListener('pointercancel', cancelHold);
 closeBtn.addEventListener('lostpointercapture', cancelHold);
 closeBtn.addEventListener('contextmenu', (e) => e.preventDefault());
 
+/* ---------- انسٹال بٹن (صرف براؤزر میں نظر آئے) ---------- */
+const installBtn = document.getElementById('installBtn');
+let installEvent = null;
+const isInstalled = () =>
+  window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();          // براؤزر کا اپنا چھوٹا بینر روک کر ہم اپنے بٹن سے دکھائیں گے
+  installEvent = e;
+  if (!isInstalled()) installBtn.hidden = false;
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!installEvent) return;
+  installEvent.prompt();       // گوگل کا انسٹال ڈائیلاگ
+  try { await installEvent.userChoice; } catch {}
+  installEvent = null;         // ایک ایونٹ سے ایک ہی بار prompt چلتا ہے
+  installBtn.hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  installEvent = null;
+  installBtn.hidden = true;
+});
+
 /* ---------- شروع ---------- */
 loadGames();
 if ('serviceWorker' in navigator) {
