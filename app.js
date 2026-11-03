@@ -11,7 +11,7 @@ const cats = document.getElementById('cats');
 const searchInput = document.getElementById('search');
 const noResults = document.getElementById('noResults');
 
-const HOLD_MS = 2000; // X کو اتنی دیر دبائے رکھنا ہے
+const HOLD_MS = 1500; // X کو اتنی دیر دبائے رکھنا ہے
 closeBtn.style.setProperty('--hold', HOLD_MS + 'ms'); // سرکل کی اینیمیشن بھی اتنی ہی لمبی
 
 let GAMES = [];
@@ -267,30 +267,81 @@ function closeGame() {
   setBarColor('#ffffff');
 }
 
-/* ---------- X کو دبا کر بند کرنا ---------- */
+/* ---------- X بٹن: پکڑ کر ادھر ادھر رکھیں، ٹھہر کر دبائیں تو بند ---------- */
+const BTN = 56;       // بٹن کا سائز
+const RING_R = 70;    // دبانے پر بڑا ہو کر بٹن اتنا پھیلتا ہے
+const DRAG_PX = 10;   // اس سے زیادہ ہلے تو کھینچنا سمجھا جائے، بند نہیں ہوگا
 let holdTimer = null;
+let press = null;     // موجودہ دباؤ کی معلومات
+let frac = { x: 1, y: 0.5 }; // مقام اسکرین کے تناسب میں، تاکہ فون گھمانے پر بھی ٹھیک رہے
+try {
+  const s = JSON.parse(localStorage.getItem('hubXPos'));
+  if (s && isFinite(s.x) && isFinite(s.y)) frac = { x: Math.min(1, Math.max(0, s.x)), y: Math.min(1, Math.max(0, s.y)) };
+} catch {}
+
+function placeBtn() {
+  closeBtn.style.left = frac.x * (innerWidth - BTN) + 'px';
+  closeBtn.style.top = frac.y * (innerHeight - BTN) + 'px';
+}
 
 function startHold(e) {
   e.preventDefault();
   try { closeBtn.setPointerCapture(e.pointerId); } catch {}
-  closeBtn.classList.add('holding');          // سرکل بھرنا شروع (CSS میں HOLD_MS جتنا)
+  const ox = frac.x * (innerWidth - BTN);
+  const oy = frac.y * (innerHeight - BTN);
+  press = { sx: e.clientX, sy: e.clientY, ox, oy, moved: false };
+
+  // دبانے پر بڑا ہو کر بھی سرکل اسکرین کے اندر رہے
+  const lim = (c, max) =>
+    max < 2 * RING_R ? max / 2 - c : Math.min(Math.max(c, RING_R), max - RING_R) - c;
+  closeBtn.style.setProperty('--sx', lim(ox + BTN / 2, innerWidth) + 'px');
+  closeBtn.style.setProperty('--sy', lim(oy + BTN / 2, innerHeight) + 'px');
+
+  closeBtn.classList.add('holding');          // سرکل بھرنا شروع
   clearTimeout(holdTimer);
   holdTimer = setTimeout(() => {
-    cancelHold();
+    endPress();
     closeGame();
   }, HOLD_MS);
 }
-function cancelHold() {
+
+function onMove(e) {
+  if (!press) return;
+  const dx = e.clientX - press.sx;
+  const dy = e.clientY - press.sy;
+  if (!press.moved) {
+    if (Math.hypot(dx, dy) < DRAG_PX) return;
+    // ہاتھ ہل گیا: یہ کھینچنا ہے، بند کرنے کا ٹائمر ختم
+    press.moved = true;
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    closeBtn.classList.remove('holding');
+    closeBtn.classList.add('dragging');
+  }
+  const x = Math.min(Math.max(0, press.ox + dx), innerWidth - BTN);
+  const y = Math.min(Math.max(0, press.oy + dy), innerHeight - BTN);
+  frac = { x: x / (innerWidth - BTN), y: y / (innerHeight - BTN) };
+  placeBtn();
+}
+
+function endPress() {
   clearTimeout(holdTimer);
   holdTimer = null;
-  closeBtn.classList.remove('holding');       // سرکل واپس خالی، گیم چلتی رہے گی
+  if (press && press.moved) {
+    try { localStorage.setItem('hubXPos', JSON.stringify(frac)); } catch {}  // نئی جگہ یاد رکھو
+  }
+  press = null;
+  closeBtn.classList.remove('holding', 'dragging'); // سرکل واپس خالی، گیم چلتی رہے گی
 }
 
 closeBtn.addEventListener('pointerdown', startHold);
-closeBtn.addEventListener('pointerup', cancelHold);
-closeBtn.addEventListener('pointercancel', cancelHold);
-closeBtn.addEventListener('lostpointercapture', cancelHold);
+closeBtn.addEventListener('pointermove', onMove);
+closeBtn.addEventListener('pointerup', endPress);
+closeBtn.addEventListener('pointercancel', endPress);
+closeBtn.addEventListener('lostpointercapture', endPress);
 closeBtn.addEventListener('contextmenu', (e) => e.preventDefault());
+window.addEventListener('resize', placeBtn);
+placeBtn();
 
 /* ---------- انسٹال بٹن (صرف براؤزر میں نظر آئے) ---------- */
 const installBtn = document.getElementById('installBtn');
