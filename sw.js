@@ -1,6 +1,6 @@
 // صرف لانچر کی اپنی فائلیں کیش ہوتی ہیں۔ گیمز کو یہ ہاتھ نہیں لگاتا۔
 // پہلے نیٹ ورک سے تازہ فائل لیتا ہے (تبدیلی فوراً نظر آتی ہے)، آف لائن ہو تو کیش سے دیتا ہے۔
-const CACHE = 'hub-v8';
+const CACHE = 'hub-v9';
 const SHELL = [
   './', 'index.html', 'style.css', 'app.js',
   'games.json', 'manifest.json', 'icon-192.png', 'icon-512.png'
