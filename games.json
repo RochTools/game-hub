@@ -9,8 +9,8 @@
     {
     "title": "Ludo Don",
     "url": "https://rochtools.github.io/ludo-don/",
-    "color": "#0e0040",
-    "bar": "#0e0040",
+    "color": "0080ff",
+    "bar": "#0080ff",
     "players": [1, 2, 4]
   },
   {
