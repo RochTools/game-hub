@@ -78,7 +78,7 @@ h1 {
 /* ---------- ہوم ---------- */
 #home {
   min-height: calc(100dvh - 70px);
-  padding: 20px 16px calc(env(safe-area-inset-bottom) + 28px);
+  padding: 20px 16px calc(env(safe-area-inset-bottom) + 100px); /* نیچے بار کے لیے جگہ */
   max-width: 640px;
   margin: 0 auto;
 }
@@ -275,34 +275,43 @@ h1 {
   text-align: center;
 }
 
-/* ---------- کیٹیگریز اور سرچ ---------- */
+/* ---------- نیچے کیٹیگری بار (آئیکن کے ساتھ) ---------- */
 .cats {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
   display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  margin-bottom: 18px;
+  padding: 6px 8px calc(env(safe-area-inset-bottom) + 6px);
+  background: rgba(255, 255, 255, .96);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid #eceef3;
+  box-shadow: 0 -4px 14px rgba(20, 20, 50, .06);
 }
 .chip {
   flex: 1 1 0;
   min-width: 0;
-  padding: 10px 6px;
-  background: #fff;
-  border: 1px solid #e8eaf0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 4px 6px;
+  background: none;
+  border: 0;
   border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(20, 20, 50, .05), 0 3px 8px rgba(20, 20, 50, .06);
-  color: #3b3b4f;
+  color: #8a8fa3;
   font: inherit;
-  font-size: .85rem;
-  font-weight: 600;
+  font-size: .72rem;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
+  transition: color .15s, background .15s;
 }
-.chip[aria-pressed="true"] {
-  background: #14141f;
-  border-color: #14141f;
-  color: #fff;
-}
+.chip svg { width: 34px; height: 26px; fill: currentColor; display: block; }
+.chip:active { opacity: .7; }
+.chip[aria-pressed="true"] { color: #14141f; background: #f1f2f6; }
 
 .search {
   display: flex;
