@@ -256,23 +256,7 @@ function setBarColor(color) {
   if (themeMeta) themeMeta.setAttribute('content', color);
 }
 
-// فل اسکرین: اوپر اور نیچے کی سسٹم پٹیاں چھپ جاتی ہیں
-function enterFullscreen() {
-  const el = document.documentElement;
-  if (document.fullscreenElement || !el.requestFullscreen) return;
-  try {
-    const p = el.requestFullscreen({ navigationUI: 'hide' });
-    if (p && p.catch) p.catch(() => {}); // نہ ملے تو گیم عام طریقے سے چلتی رہے
-  } catch {}
-}
-function exitFullscreen() {
-  if (document.fullscreenElement && document.exitFullscreen) {
-    try { document.exitFullscreen().catch(() => {}); } catch {}
-  }
-}
-
 function openGame(game) {
-  enterFullscreen(); // انگلی کے دبانے کے فوراً بعد ہی ہونا ضروری ہے، ورنہ براؤزر منع کر دیتا ہے
   setBarColor(game.bar || game.color || '#ffffff');
   frame.src = game.url;
   player.hidden = false;
@@ -281,7 +265,6 @@ function closeGame() {
   player.hidden = true;
   frame.src = 'about:blank';
   setBarColor('#ffffff');
-  exitFullscreen();
 }
 
 /* ---------- X بٹن: پکڑ کر ادھر ادھر رکھیں، ٹھہر کر دبائیں تو بند ---------- */
