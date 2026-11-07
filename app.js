@@ -11,7 +11,7 @@ const cats = document.getElementById('cats');
 const searchInput = document.getElementById('search');
 const noResults = document.getElementById('noResults');
 
-const HOLD_MS = 1500; // X کو اتنی دیر دبائے رکھنا ہے
+const HOLD_MS = 1000; // X کو اتنی دیر دبائے رکھنا ہے
 closeBtn.style.setProperty('--hold', HOLD_MS + 'ms'); // سرکل کی اینیمیشن بھی اتنی ہی لمبی
 
 let GAMES = [];
