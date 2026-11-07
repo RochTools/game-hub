@@ -256,15 +256,37 @@ function setBarColor(color) {
   if (themeMeta) themeMeta.setAttribute('content', color);
 }
 
+// فل اسکرین اب manifest.json سے پوری ایپ کے لیے ہے، الگ سے مانگنے کی ضرورت نہیں
+// گیم کے آئی فریم کا سائز پکا رکھنا: اینڈرائیڈ کی پٹیاں آئیں تو گیم سکڑے نہیں،
+// پٹی بس اس کے نچلے حصے کے اوپر آ جائے۔ صرف فون گھمانے (چوڑائی بدلنے) پر سائز بدلتا ہے،
+// اور اونچائی صرف بڑھنے پر بڑھتی ہے، گھٹنے پر نہیں۔
+let lock = null;
+function applyLock() {
+  if (!lock) return;
+  frame.style.width = lock.w + 'px';
+  frame.style.height = lock.h + 'px';
+}
+window.addEventListener('resize', () => {
+  if (!lock) return;
+  if (innerWidth !== lock.w) lock = { w: innerWidth, h: innerHeight };
+  else if (innerHeight > lock.h) lock.h = innerHeight;
+  applyLock();
+});
+
 function openGame(game) {
   setBarColor(game.bar || game.color || '#ffffff');
   frame.src = game.url;
   player.hidden = false;
+  lock = { w: innerWidth, h: innerHeight };
+  applyLock();
 }
 function closeGame() {
   player.hidden = true;
   frame.src = 'about:blank';
   setBarColor('#ffffff');
+  lock = null;
+  frame.style.width = '';
+  frame.style.height = '';
 }
 
 /* ---------- X بٹن: پکڑ کر ادھر ادھر رکھیں، ٹھہر کر دبائیں تو بند ---------- */
