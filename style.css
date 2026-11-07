@@ -3,9 +3,19 @@
 html, body {
   margin: 0;
   height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none; /* ربڑ کی طرح کھنچنا اور نیچے کھینچ کر ریفریش بند */
   background: #ffffff;
   color: #14141f;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* صفحہ خود اپنی جگہ جما رہتا ہے؛ صرف گیمز کی فہرست اندر اسکرول ہوتی ہے */
+body {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---------- ہیڈر ---------- */
@@ -77,7 +87,12 @@ h1 {
 
 /* ---------- ہوم ---------- */
 #home {
-  min-height: calc(100dvh - 70px);
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
   padding: 20px 16px calc(env(safe-area-inset-bottom) + 100px); /* نیچے بار کے لیے جگہ */
   max-width: 640px;
   margin: 0 auto;
