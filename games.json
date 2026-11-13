@@ -20,7 +20,11 @@
     "bar": "#0080ff",
     "players": [1, 2, 4]
   },
-    
+   {
+       "title": "Eightball",
+       "url": "https://rochtools.github.io/eightball/",
+       "color": "#000000",
+       "players": [1, 2]
   {
     "title": "Bubble Bounce",
     "url": "https://rochtools.github.io/bubble-bounce/",
