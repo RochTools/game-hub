@@ -20,12 +20,19 @@
     "bar": "#0080ff",
     "players": [1, 2, 4]
   },
+    
   {
     "title": "Bubble Bounce",
     "url": "https://rochtools.github.io/bubble-bounce/",
     "color": "#3d97ff",
     "players": [1]
   },
+    { 
+        "title": "paddle-ball",
+        "url": "https://rochtools.github.io/paddle-ball/",
+        "color": "#000000",
+        "players": [1, 2]
+    },
   {
     "title": "The Mill Game",
     "url": "https://rochtools.github.io/the-mill-game/",
