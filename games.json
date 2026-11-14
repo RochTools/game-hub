@@ -21,11 +21,16 @@
     "players": [1, 2, 4]
   },
    {
-       "title": "Eightball",
+       "title": "Snooker",
        "url": "https://rochtools.github.io/eightball/",
        "color": "#000000",
        "players": [1, 2]
    },
+    {
+        "title": "Carrom Board",
+        "url": "https://rochtools.github.io/carrom/",
+        "color": "#0047FF",
+        "players": [1, 2, 4]
   {
     "title": "Bubble Bounce",
     "url": "https://rochtools.github.io/bubble-bounce/",
