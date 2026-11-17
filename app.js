@@ -9,7 +9,15 @@ const drawerClose = document.getElementById('drawerClose');
 const savedList = document.getElementById('savedList');
 const cats = document.getElementById('cats');
 const searchInput = document.getElementById('search');
+const searchToggle = document.getElementById('searchToggle');
+const searchPanel = document.getElementById('searchPanel');
+const searchClose = document.getElementById('searchClose');
 const noResults = document.getElementById('noResults');
+const recentSection = document.getElementById('recentSection');
+const recentCard = document.getElementById('recentCard');
+const featuredTrack = document.getElementById('featuredTrack');
+const sliderDots = document.getElementById('sliderDots');
+const gameCount = document.getElementById('gameCount');
 
 const HOLD_MS = 1000; // X کو اتنی دیر دبائے رکھنا ہے
 closeBtn.style.setProperty('--hold', HOLD_MS + 'ms'); // سرکل کی اینیمیشن بھی اتنی ہی لمبی
@@ -18,6 +26,8 @@ let GAMES = [];
 const TILES = [];      // ہر گیم کا کارڈ، فلٹر کے لیے
 let activeCat = null;  // 1 / 2 / 4 یا null (سب گیمز)
 let query = '';
+let featuredIndex = 0;
+let featuredTimer = null;
 
 /* ---------- آئیکن خود ڈھونڈنا (گیم کے اپنے ہوم اسکرین آئیکن) ---------- */
 function iconCache() {
@@ -202,14 +212,86 @@ function makeTile(game) {
   return card;
 }
 
+function getRecent() {
+  try { return localStorage.getItem('hubLastPlayed') || ''; } catch { return ''; }
+}
+function setRecent(url) {
+  try { localStorage.setItem('hubLastPlayed', url); } catch {}
+}
+function clearRecent() {
+  try { localStorage.removeItem('hubLastPlayed'); } catch {}
+  renderRecent();
+}
+function renderRecent() {
+  const game = GAMES.find((g) => g.url === getRecent());
+  recentSection.hidden = !game;
+  recentCard.textContent = '';
+  if (!game) return;
+  const card = document.createElement('article');
+  card.className = 'recent-card';
+  const art = document.createElement('div');
+  art.className = 'recent-art';
+  art.style.background = `linear-gradient(135deg, ${game.color || '#253b85'}, #17152f)`;
+  art.textContent = letterOf(game);
+  fillIcon(art, game);
+  const info = document.createElement('div');
+  info.className = 'recent-info';
+  const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = 'CONTINUE PLAYING';
+  const title = document.createElement('strong'); title.textContent = game.title;
+  const play = document.createElement('button'); play.className = 'continue-btn'; play.innerHTML = '<span>▶</span> Continue';
+  play.addEventListener('click', () => openGame(game));
+  info.append(tag, title, play);
+  const remove = document.createElement('button'); remove.className = 'recent-remove'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', 'Remove recently played game');
+  remove.addEventListener('click', clearRecent);
+  card.append(art, info, remove); recentCard.appendChild(card);
+}
+function renderFeatured() {
+  featuredTrack.textContent = ''; sliderDots.textContent = '';
+  const featured = GAMES.slice(0, Math.min(5, GAMES.length));
+  featured.forEach((game, i) => {
+    const card = document.createElement('button'); card.className = 'featured-card'; card.type = 'button';
+    card.style.setProperty('--game-glow', game.color || '#526dff');
+    const art = document.createElement('div'); art.className = 'featured-art'; art.style.background = `linear-gradient(135deg, ${game.color || '#263b86'}, #15152e)`; art.textContent = letterOf(game); fillIcon(art, game);
+    const copy = document.createElement('div'); copy.className = 'featured-copy';
+    const tag = document.createElement('span'); tag.className = 'mini-tag'; tag.textContent = i === 0 ? 'FEATURED GAME' : 'TOP PICK';
+    const title = document.createElement('strong'); title.textContent = game.title;
+    const hint = document.createElement('small'); hint.textContent = 'Tap to jump in  →';
+    copy.append(tag, title, hint); card.append(art, copy); card.addEventListener('click', () => openGame(game)); featuredTrack.appendChild(card);
+    const dot = document.createElement('button'); dot.className = 'slider-dot'; dot.type = 'button'; dot.setAttribute('aria-label', `Show ${game.title}`); dot.addEventListener('click', () => showFeatured(i)); sliderDots.appendChild(dot);
+  });
+  showFeatured(0);
+  clearInterval(featuredTimer);
+  if (featured.length > 1) featuredTimer = setInterval(() => showFeatured((featuredIndex + 1) % featured.length), 4200);
+}
+function showFeatured(index) {
+  const count = featuredTrack.children.length;
+  if (!count) return;
+  featuredIndex = (index + count) % count;
+  featuredTrack.style.transform = `translateX(-${featuredIndex * 100}%)`;
+  [...sliderDots.children].forEach((dot, i) => dot.classList.toggle('active', i === featuredIndex));
+}
+
 async function loadGames() {
   try {
     GAMES = await (await fetch('games.json')).json();
     GAMES.forEach((g) => grid.appendChild(makeTile(g)));
+    gameCount.textContent = `${GAMES.length} GAMES`;
+    renderRecent();
+    renderFeatured();
   } catch {
     grid.textContent = "Couldn't load games.json";
   }
 }
+
+let swipeStartX = null;
+const featuredWindow = document.querySelector('.featured-window');
+featuredWindow.addEventListener('touchstart', (e) => { swipeStartX = e.touches[0].clientX; }, { passive: true });
+featuredWindow.addEventListener('touchend', (e) => {
+  if (swipeStartX === null) return;
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  if (Math.abs(dx) > 35) { showFeatured(featuredIndex + (dx < 0 ? 1 : -1)); clearInterval(featuredTimer); featuredTimer = setInterval(() => showFeatured(featuredIndex + 1), 4200); }
+  swipeStartX = null;
+}, { passive: true });
 
 /* ---------- کیٹیگری اور سرچ ---------- */
 function applyFilters() {
@@ -223,6 +305,8 @@ function applyFilters() {
     card.hidden = !show;
     if (show) shown++;
   });
+
+  gameCount.textContent = `${shown} / ${GAMES.length} GAMES`;
 
   if (TILES.length && shown === 0) {
     noResults.textContent = q ? 'No games found.' : 'No games in this category yet.';
@@ -249,6 +333,24 @@ searchInput.addEventListener('input', () => {
   applyFilters();
 });
 
+function openSearch() {
+  searchPanel.hidden = false;
+  searchToggle.setAttribute('aria-expanded', 'true');
+  searchToggle.setAttribute('aria-label', 'Search is open');
+  requestAnimationFrame(() => searchInput.focus());
+}
+function closeSearch() {
+  searchPanel.hidden = true;
+  searchToggle.setAttribute('aria-expanded', 'false');
+  searchToggle.setAttribute('aria-label', 'Open search');
+  if (!searchInput.value) { query = ''; applyFilters(); }
+}
+searchToggle.addEventListener('click', () => searchPanel.hidden ? openSearch() : closeSearch());
+searchClose.addEventListener('click', () => {
+  searchInput.value = ''; query = ''; applyFilters(); closeSearch();
+});
+searchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
+
 /* ---------- گیم کھولنا / بند کرنا ---------- */
 // اوپر کی اسٹیٹس بار کا رنگ: گیم میں گیم کا، ہوم پر سفید
 const themeMeta = document.querySelector('meta[name="theme-color"]');
@@ -274,6 +376,8 @@ window.addEventListener('resize', () => {
 });
 
 function openGame(game) {
+  setRecent(game.url);
+  renderRecent();
   setBarColor(game.bar || game.color || '#ffffff');
   frame.src = game.url;
   player.hidden = false;
