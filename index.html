@@ -8,6 +8,15 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Games Hub">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem('hubTheme');
+        var light = m === 'light' || (m !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches);
+        document.documentElement.dataset.theme = light ? 'light' : 'dark';
+      } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+    })();
+  </script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" href="icon-192.png">
@@ -15,10 +24,12 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="offlineBar" role="status" hidden>You're offline · games need internet</div>
+  <div id="toast" role="status" hidden></div>
   <header id="topbar">
     <div class="topbar-row">
       <div class="brand">
-        <div class="brand-mark">✦</div>
+        <div class="brand-mark" data-ic="spark"></div>
         <div><h1>Games Hub</h1><small>YOUR NEXT PLAYGROUND</small></div>
       </div>
       <button id="installBtn" hidden>Install</button>
@@ -40,17 +51,28 @@
   </header>
 
   <main id="home">
+    <section id="dailySection" class="section" hidden></section>
+
     <section id="recentSection" class="section recent-section" hidden>
-      <div class="section-heading"><div><span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2>Recently Played</h2></div><span class="section-mark">↗</span></div>
-      <div id="recentCard"></div>
+      <div class="section-heading"><div><span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2 data-ic="clock">Recently Played</h2></div><button id="recentClear" class="text-btn" type="button">Clear</button></div>
+      <div id="recentCard" class="recent-row"></div>
     </section>
 
     <section class="section featured-section">
-      <div class="section-heading"><div><span class="eyebrow">HANDPICKED FOR YOU</span><h2>Top Games</h2></div><div class="slider-dots" id="sliderDots" aria-label="Featured game pages"></div></div>
+      <div class="section-heading"><div><span class="eyebrow">HANDPICKED FOR YOU</span><h2 data-ic="fire">Top Games</h2></div><div class="slider-dots" id="sliderDots" aria-label="Featured game pages"></div></div>
       <div class="featured-window"><div id="featuredTrack" class="featured-track"></div></div>
     </section>
 
-    <div class="library-heading"><div><span class="eyebrow">EXPLORE & PLAY</span><h2>Game Library</h2></div><span id="gameCount" class="game-count"></span></div>
+    <div class="library-heading"><div><span class="eyebrow">EXPLORE & PLAY</span><h2 data-ic="gamepad">Game Library</h2></div><div class="lib-right"><span id="gameCount" class="game-count"></span>
+      <label class="sort"><span data-ic="sort"></span>
+        <select id="sortSel" aria-label="Sort games">
+          <option value="default">Default</option>
+          <option value="az">A – Z</option>
+          <option value="new">Newest</option>
+          <option value="most">Most played</option>
+        </select></label></div></div>
+
+    <div id="genres" class="genres" role="toolbar" aria-label="Genres"></div>
 
     <div id="grid" class="grid"></div>
     <div id="noResults" class="empty" hidden></div>
@@ -78,8 +100,53 @@
       <button id="drawerClose" aria-label="Close menu">✕</button>
     </div>
 
+    <section class="theme">
+      <button id="themeBtn" class="theme-btn" type="button" aria-expanded="false" aria-controls="themeOpts">
+        <span id="themeIc" class="theme-ic"></span>
+        <span class="theme-label"><b>Theme</b><small id="themeCur">System</small></span>
+        <span class="chev" data-ic="chevron"></span>
+      </button>
+      <div id="themeOpts" class="theme-opts" role="radiogroup" aria-label="Theme" hidden>
+        <button type="button" role="radio" class="theme-opt" data-mode="system"><span data-ic="monitor"></span><span class="t">System default</span><span data-ic="check" class="tick"></span></button>
+        <button type="button" role="radio" class="theme-opt" data-mode="dark"><span data-ic="moon"></span><span class="t">Dark mode</span><span data-ic="check" class="tick"></span></button>
+        <button type="button" role="radio" class="theme-opt" data-mode="light"><span data-ic="sun"></span><span class="t">Light mode</span><span data-ic="check" class="tick"></span></button>
+      </div>
+    </section>
+
+    <section class="settings">
+      <button id="setBtn" class="theme-btn" type="button" aria-expanded="false" aria-controls="setPanel">
+        <span class="theme-ic" data-ic="gear"></span>
+        <span class="theme-label"><b>Settings</b><small>Close button · Vibration · Reset</small></span>
+        <span class="chev" data-ic="chevron"></span>
+      </button>
+      <div id="setPanel" class="set-panel" hidden>
+        <div class="set-row">
+          <div class="set-top"><span>Close button hold time</span><b id="holdVal">1.0s</b></div>
+          <input id="holdRange" type="range" min="500" max="3000" step="100" value="1000" aria-label="Hold time">
+        </div>
+        <div class="set-row set-flex">
+          <span>Vibration</span>
+          <button id="vibeSwitch" class="switch" type="button" role="switch" aria-checked="true" aria-label="Vibration"><i></i></button>
+        </div>
+        <button id="resetX" class="set-btn" type="button"><span data-ic="undo"></span>Reset close button position</button>
+        <button id="clearRecent" class="set-btn" type="button"><span data-ic="clock"></span>Clear recently played</button>
+        <button id="resetStats" class="set-btn danger" type="button"><span data-ic="trash"></span>Reset stats &amp; badges</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <h3 data-ic="chart">Your Stats</h3>
+      <div id="statsBox" class="stats-grid"></div>
+      <div id="mostPlayed" class="most-played"></div>
+    </section>
+
+    <section class="badges">
+      <h3 data-ic="trophy">Badges <span id="badgeCount" class="badge-count"></span></h3>
+      <div id="badgeGrid" class="badge-grid"></div>
+    </section>
+
     <section class="saved">
-      <h3>Saved Games <span class="saved-heart">❤</span></h3>
+      <h3>Saved Games <span class="saved-heart" data-ic="heart"></span></h3>
       <div id="savedList"></div>
     </section>
   </aside>

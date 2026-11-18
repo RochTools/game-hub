@@ -1,53 +1,123 @@
 [
-    {
+  {
     "title": "mini car race",
     "url": "https://rochtools.github.io/mini-car-race/",
     "color": "#0b0620",
     "bar": "#d89b66",
-    "players": [1]
+    "players": [
+      1
+    ],
+    "tags": [
+      "racing",
+      "arcade"
+    ],
+    "featured": true,
+    "order": 4,
+    "added": "2026-03-01"
   },
   {
     "title": "3D Blocks",
     "url": "https://rochtools.github.io/block-blast-game/index.html",
     "color": "#0b0620",
     "bar": "#d89b66",
-    "players": [1]
+    "players": [
+      1
+    ],
+    "tags": [
+      "puzzle"
+    ],
+    "featured": true,
+    "order": 5,
+    "added": "2026-03-15"
   },
-    {
+  {
     "title": "Ludo Don",
     "url": "https://rochtools.github.io/ludo-don/",
-    "color": "0080ff",
+    "color": "#0080ff",
     "bar": "#0080ff",
-    "players": [1, 2, 4]
+    "players": [
+      1,
+      2,
+      4
+    ],
+    "tags": [
+      "board"
+    ],
+    "featured": true,
+    "order": 1,
+    "added": "2026-04-10"
   },
-   {
-       "title": "Snooker",
-       "url": "https://rochtools.github.io/eightball/",
-       "color": "#000000",
-       "players": [1, 2]
-   },
-    {
-        "title": "Carrom Board",
-        "url": "https://rochtools.github.io/carrom/",
-        "color": "#0047FF",
-        "players": [1, 2, 4]
-    },
+  {
+    "title": "Snooker",
+    "url": "https://rochtools.github.io/eightball/",
+    "color": "#000000",
+    "players": [
+      1,
+      2
+    ],
+    "tags": [
+      "sports"
+    ],
+    "featured": true,
+    "order": 3,
+    "added": "2026-05-02"
+  },
+  {
+    "title": "Carrom Board",
+    "url": "https://rochtools.github.io/carrom/",
+    "color": "#0047FF",
+    "players": [
+      1,
+      2,
+      4
+    ],
+    "tags": [
+      "board",
+      "sports"
+    ],
+    "featured": true,
+    "order": 2,
+    "added": "2026-05-20"
+  },
   {
     "title": "Bubble Bounce",
     "url": "https://rochtools.github.io/bubble-bounce/",
     "color": "#3d97ff",
-    "players": [1]
+    "players": [
+      1
+    ],
+    "tags": [
+      "arcade",
+      "puzzle"
+    ],
+    "added": "2026-06-10"
   },
-    { 
-        "title": "paddle-ball",
-        "url": "https://rochtools.github.io/paddle-ball/",
-        "color": "#000000",
-        "players": [1, 2]
-    },
+  {
+    "title": "paddle-ball",
+    "url": "https://rochtools.github.io/paddle-ball/",
+    "color": "#000000",
+    "players": [
+      1,
+      2
+    ],
+    "tags": [
+      "arcade",
+      "sports"
+    ],
+    "added": "2026-07-01"
+  },
   {
     "title": "The Mill Game",
     "url": "https://rochtools.github.io/the-mill-game/",
     "color": "#682eea",
-    "players": [1, 2]
+    "players": [
+      1,
+      2
+    ],
+    "tags": [
+      "board",
+      "puzzle"
+    ],
+    "added": "2026-08-12"
   }
 ]
