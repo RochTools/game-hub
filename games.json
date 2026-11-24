@@ -30,6 +30,11 @@
     "order": 5,
     "added": "2026-03-15"
   },
+  { "title": "Opencraft",
+    "url": "https://rochtools.github.io/opencraft/",
+    "color": "#ffffff",
+    "players": [1,],
+  },
   {
     "title": "Ludo Don",
     "url": "https://rochtools.github.io/ludo-don/",
