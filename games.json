@@ -30,12 +30,22 @@
     "order": 5,
     "added": "2026-03-15"
   },
-{
-  "title": "Opencraft",
-  "url": "https://rochtools.github.io/opencraft/",
-  "color": "#ffffff",
-  "players": [1],
-},
+  {
+    "title": "Open craft",
+    "url": "https://rochtools.github.io/opencraft/",
+    "color": "#0b0620",
+    "bar": "#d89b66",
+    "players": [
+      1
+    ],
+    "tags": [
+      "world",
+      "craft"
+    ],
+    "featured": true,
+    "order": 8,
+    "added": "2026-03-24"
+  },
   {
     "title": "Ludo Don",
     "url": "https://rochtools.github.io/ludo-don/",
